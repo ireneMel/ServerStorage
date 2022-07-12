@@ -4,6 +4,7 @@ import models.Group;
 import models.Product;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -49,7 +50,8 @@ public class StorageDB {
     }
 
     public void createGroup(Group group) throws SQLException {
-        if (group.getGroupName() == null || group.getGroupName().isBlank()) throw new RuntimeException("Group name must be not empty");
+        if (group.getGroupName() == null || group.getGroupName().isBlank())
+            throw new RuntimeException("Group name must be not empty");
         PreparedStatement st = connection.prepareStatement("INSERT INTO groups VALUES (?, ?)");
         st.setString(1, group.getGroupName());
         st.setString(2, group.getDescription());
@@ -82,7 +84,7 @@ public class StorageDB {
         PreparedStatement st = connection.prepareStatement("DELETE FROM groups WHERE groupName=?");
         st.setString(1, groupName);
         int res = st.executeUpdate();
-        if(res < 1) throw new RuntimeException("This group does not exist");
+        if (res < 1) throw new RuntimeException("This group does not exist");
         st.close();
     }
 
@@ -143,7 +145,8 @@ public class StorageDB {
     }
 
     public void updateGroup(String groupName, Group newGroup) throws SQLException {
-        if (newGroup.getGroupName() == null || newGroup.getGroupName().isBlank()) throw new RuntimeException("Group name must be not empty");
+        if (newGroup.getGroupName() == null || newGroup.getGroupName().isBlank())
+            throw new RuntimeException("Group name must be not empty");
         PreparedStatement st = connection.prepareStatement("UPDATE groups SET groupName=?, groupDescription=? WHERE groupName=?");
         update(st, (statement -> {
             try {
@@ -182,6 +185,7 @@ public class StorageDB {
     public void createProduct(Product product) throws SQLException {
         createProduct(product.getProductName(), product.getPrice(), product.getAmount(), product.getGroupName(), product.getDescription(), product.getManufacturer());
     }
+
     public void createProduct(String productName, double price, int amount, String groupName) throws SQLException {
         createProduct(productName, price, amount, groupName, "", "");
     }
@@ -201,7 +205,7 @@ public class StorageDB {
         PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE productGroup=?");
         st.setString(1, groupName);
         int res = st.executeUpdate();
-        if(res < 1) throw new RuntimeException("This group does not exist");
+        if (res < 1) throw new RuntimeException("This group does not exist");
         st.close();
     }
 
@@ -209,7 +213,7 @@ public class StorageDB {
         PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE productName=?");
         st.setString(1, productName);
         int res = st.executeUpdate();
-        if(res < 1) throw new RuntimeException("This product does not exist");
+        if (res < 1) throw new RuntimeException("This product does not exist");
         st.close();
     }
 
@@ -231,14 +235,40 @@ public class StorageDB {
         );
     }
 
+    public Group readGroup(String productName) throws SQLException {
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM groups WHERE groupName=?");
+        st.setString(1, productName);
+        ResultSet res = st.executeQuery();
+        Group group = getGroup(res);
+
+        st = connection.prepareStatement("SELECT * FROM products WHERE productGroup=?");
+        res = st.executeQuery();
+
+        List<Product> productsFromGroup = new ArrayList<>();
+        while (res.next()) {
+            productsFromGroup.add(new Product(
+                    res.getString("productName"),
+                    res.getDouble("productPrice"),
+                    res.getInt("productAmount"),
+                    res.getString("productGroup"),
+                    res.getString("productDescription"),
+                    res.getString("productManufacturer")
+            ));
+        }
+        group.setGroupProducts(productsFromGroup);
+        res.close();
+        st.close();
+        return group;
+    }
+
+
     public Product readProduct(String productName) throws SQLException {
-        Product product = null;
         PreparedStatement st = connection.prepareStatement("SELECT * FROM products WHERE productName=?");
         st.setString(1, productName);
         ResultSet res = st.executeQuery();
-        product = getProduct(res);
-        res.close();
+        Product product = getProduct(res);
         st.close();
+        res.close();
         return product;
     }
 
@@ -254,7 +284,8 @@ public class StorageDB {
     }
 
     public void updateProductName(String productName, String newProductName) throws SQLException {
-        if (newProductName == null || newProductName.isBlank()) throw new RuntimeException("Product name must be not empty");
+        if (newProductName == null || newProductName.isBlank())
+            throw new RuntimeException("Product name must be not empty");
         PreparedStatement st = connection.prepareStatement("UPDATE products SET productName=? WHERE productName=?");
         update(st, (statement -> {
             try {
@@ -347,7 +378,8 @@ public class StorageDB {
     }
 
     public void updateProduct(String productName, Product newProduct) throws SQLException {
-        if (newProduct.getProductName() == null || newProduct.getProductName().isBlank()) throw new RuntimeException("Product name must be not empty");
+        if (newProduct.getProductName() == null || newProduct.getProductName().isBlank())
+            throw new RuntimeException("Product name must be not empty");
         if (newProduct.getPrice() < 0) throw new RuntimeException("Price must be above zero");
         if (newProduct.getAmount() < 0) throw new RuntimeException("Amount must be above zero");
         if (!isGroupExistent(newProduct.getGroupName())) throw new RuntimeException("Group does not exist");

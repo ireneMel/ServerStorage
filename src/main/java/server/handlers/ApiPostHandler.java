@@ -44,7 +44,6 @@ public class ApiPostHandler implements HttpHandler {
                 db.updateGroupName(nameToUpdate, group.getGroupName());
                 if (group.getDescription() != null)
                     db.updateGroupDescription(nameToUpdate, group.getDescription());
-
                 exchange.sendResponseHeaders(200, 0);
             } catch (Exception e) {
                 exchange.sendResponseHeaders(409, e.getMessage().length());

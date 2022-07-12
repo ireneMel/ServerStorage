@@ -22,10 +22,10 @@ public class Criteria {
     private String manufacturerQuery = "";
 
 
-    public static class CriteriaBuilder{
+    public static class CriteriaBuilder {
         private String groupNameQuery = "";
 
-        public void groupNameQuery(String groupNameQuery, boolean isExact){
+        public void groupNameQuery(String groupNameQuery, boolean isExact) {
             if (isExact)
                 this.groupNameQuery = groupNameQuery;
             else
