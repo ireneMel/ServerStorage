@@ -48,6 +48,15 @@ public class StorageDB {
         }
     }
 
+    public void createGroup(Group group) throws SQLException {
+        if (group.getGroupName() == null || group.getGroupName().isBlank()) throw new RuntimeException("Group name must be not empty");
+        PreparedStatement st = connection.prepareStatement("INSERT INTO groups VALUES (?, ?)");
+        st.setString(1, group.getGroupName());
+        st.setString(2, group.getDescription());
+        st.executeUpdate();
+        st.close();
+    }
+
     public void createGroup(String groupName, String groupDescription) throws SQLException {
         if (groupName == null || groupName.isBlank()) throw new RuntimeException("Group name must be not empty");
         PreparedStatement st = connection.prepareStatement("INSERT INTO groups VALUES (?, ?)");
@@ -209,6 +218,13 @@ public class StorageDB {
                 resultSet.getString("productGroup"),
                 resultSet.getString("productDescription"),
                 resultSet.getString("productManufacturer")
+        );
+    }
+
+    private Group getGroup(ResultSet resultSet) throws SQLException {
+        return new Group(
+                resultSet.getString("groupName"),
+                resultSet.getString("groupDescription")
         );
     }
 
@@ -375,7 +391,7 @@ public class StorageDB {
         st.setDouble(3, criteria.getUpperBoundPrice());
         st.setInt(4, criteria.getLowerBoundAmount());
         st.setInt(5, criteria.getUpperBoundAmount());
-        st.setString(6, criteria.getGroupNameQuery());
+        st.setString(6, criteria.getGroupNameQuery() + "%");
         st.setString(7, criteria.getDescriptionQuery() + "%");
         st.setString(8, criteria.getManufacturerQuery() + "%");
 
@@ -383,6 +399,29 @@ public class StorageDB {
 
         while (res.next()) {
             productList.add(getProduct(res));
+        }
+
+        st.execute();
+        res.close();
+        st.close();
+        return productList;
+    }
+
+    public List<Group> filterGroup(Criteria criteria) throws SQLException {
+        LinkedList<Group> productList = new LinkedList<>();
+
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM groups WHERE" +
+                " (groupName LIKE ?) AND" +
+                " (groupDescription LIKE ?) "
+        );
+
+        st.setString(1, criteria.getGroupNameQuery() + "%");
+        st.setString(2, criteria.getDescriptionQuery() + "%");
+
+        ResultSet res = st.executeQuery();
+
+        while (res.next()) {
+            productList.add(getGroup(res));
         }
 
         st.execute();
