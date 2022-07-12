@@ -14,7 +14,7 @@ public class Criteria {
     private int lowerBoundAmount;
     @Builder.Default
     private int upperBoundAmount = Integer.MAX_VALUE;
-    @Builder.Default
+//    @Builder.Default
     private String groupNameQuery = "";
     @Builder.Default
     private String descriptionQuery = "";
@@ -30,6 +30,10 @@ public class Criteria {
                 this.groupNameQuery = groupNameQuery;
             else
                 this.groupNameQuery = groupNameQuery + '%';
+        }
+
+        public String getGroupNameQuery() {
+            return groupNameQuery;
         }
     }
 }
