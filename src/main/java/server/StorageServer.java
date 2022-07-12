@@ -15,7 +15,6 @@ public class StorageServer {
         db = new StorageDB();
         db.initialization("OurDb");
         server = HttpServer.create(new InetSocketAddress(port), 0);
-        startServer();
     }
 
     private void startServer(){
