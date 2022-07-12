@@ -57,7 +57,9 @@ public class DbTest {
 
     @Test
     public void creation() throws SQLException {
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
         Assertions.assertIterableEquals(expectedGroups, storageDB.filterGroup(Criteria.builder().build()));
 
         Assertions.assertThrows(RuntimeException.class, () -> storageDB.createProduct(new Product(
@@ -77,7 +79,10 @@ public class DbTest {
         storageDB.updateProductName("Watermelon", "Lime");
         storageDB.updateProductName("Melon", "Lemon");
         storageDB.updateProductName("Beef", "Pork");
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
     }
 
     @Test
@@ -88,7 +93,10 @@ public class DbTest {
         storageDB.updateProductAmount(expectedProducts.get(3).getProductName(), 100);
         storageDB.updateProductAmount(expectedProducts.get(4).getProductName(), 5);
         storageDB.updateProductAmount(expectedProducts.get(2).getProductName(), 71);
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()), "Wrong amount");
+
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
         Assertions.assertThrows(RuntimeException.class, () -> storageDB.updateProductAmount(expectedProducts.get(3).getProductName(), -12));
     }
 
@@ -100,7 +108,10 @@ public class DbTest {
         storageDB.updateProductPrice(expectedProducts.get(3).getProductName(), 11.3);
         storageDB.updateProductPrice(expectedProducts.get(4).getProductName(), 45.1);
         storageDB.updateProductPrice(expectedProducts.get(2).getProductName(), 190.6);
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
         Assertions.assertThrows(RuntimeException.class, () -> storageDB.updateProductPrice(expectedProducts.get(3).getProductName(), -12));
     }
 
@@ -111,7 +122,10 @@ public class DbTest {
         expectedProducts.get(2).setDescription(description + "2");
         storageDB.updateProductDescription(expectedProducts.get(1).getProductName(), description);
         storageDB.updateProductDescription(expectedProducts.get(2).getProductName(), description + "2");
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
     }
 
     @Test
@@ -121,7 +135,10 @@ public class DbTest {
         expectedProducts.get(2).setManufacturer(manufacturer + "2");
         storageDB.updateProductManufacturer(expectedProducts.get(1).getProductName(), manufacturer);
         storageDB.updateProductManufacturer(expectedProducts.get(2).getProductName(), manufacturer + "2");
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
     }
 
     @Test
@@ -142,7 +159,9 @@ public class DbTest {
         expectedProducts.get(0).setDescription("New product description");
         expectedProducts.get(0).setManufacturer("Zhytomyr");
 
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
     }
 
     @Test
@@ -154,7 +173,9 @@ public class DbTest {
 
         expectedGroups.get(4).setGroupName("Vegan");
 
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
 
         //check in groups table
         expectedGroups.get(0).setDescription("Fresh meat for the customers");
@@ -173,7 +194,9 @@ public class DbTest {
 
         Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteProduct("this product surely does not exist"));
 
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
     }
 
     @Test
@@ -192,7 +215,9 @@ public class DbTest {
         expectedGroups.remove(4);
         expectedGroups.remove(1);
 
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
         Assertions.assertIterableEquals(expectedGroups, storageDB.filterGroup(Criteria.builder().build()));
         Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteGroup("This gr does not exist"));
     }
@@ -254,9 +279,11 @@ public class DbTest {
         expectedProducts.add(new Product("Bean", 5.5, 300, groupNames[1], "", ""));
         expectedProducts.add(new Product("Blackberry", 172.0, 100, groupNames[4], "", ""));
 
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder()
-                .productNameQuery("B")
-                .build()));
+        Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+        criteriaBuilder.groupNameQuery("%", true);
+        criteriaBuilder.productNameQuery("B");
+//        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(criteriaBuilder.build()));
     }
 //
 //    @Test
