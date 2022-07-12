@@ -81,7 +81,8 @@ public class StorageDB {
         deleteProductsInGroup(groupName);
         PreparedStatement st = connection.prepareStatement("DELETE FROM groups WHERE groupName=?");
         st.setString(1, groupName);
-        st.execute();
+        int res = st.executeUpdate();
+        if(res < 1) throw new RuntimeException("This group does not exist");
         st.close();
     }
 
@@ -199,14 +200,16 @@ public class StorageDB {
         if (!isGroupExistent(groupName)) throw new RuntimeException("Group does not exist");
         PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE productGroup=?");
         st.setString(1, groupName);
-        st.execute();
+        int res = st.executeUpdate();
+        if(res < 1) throw new RuntimeException("This group does not exist");
         st.close();
     }
 
     public void deleteProduct(String productName) throws SQLException {
         PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE productName=?");
         st.setString(1, productName);
-        st.execute();
+        int res = st.executeUpdate();
+        if(res < 1) throw new RuntimeException("This product does not exist");
         st.close();
     }
 
