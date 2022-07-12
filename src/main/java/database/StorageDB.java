@@ -85,7 +85,7 @@ public class StorageDB {
         st.close();
     }
 
-    public Double getAllGroupCost(String groupName) throws SQLException {
+    public Double getGroupCost(String groupName) throws SQLException {
         PreparedStatement st = connection.prepareStatement("SELECT productPrice, productAmount FROM products WHERE productGroup=?");
         st.setString(1, groupName);
         ResultSet res = st.executeQuery();
@@ -239,7 +239,7 @@ public class StorageDB {
         return product;
     }
 
-    public Double getAllProductCost(String productName) throws SQLException {
+    public Double getProductCost(String productName) throws SQLException {
         PreparedStatement st = connection.prepareStatement("SELECT productPrice, productAmount FROM products WHERE productName=?");
         st.setString(1, productName);
         ResultSet res = st.executeQuery();
@@ -305,7 +305,7 @@ public class StorageDB {
     }
 
     public void updateProductDescription(String productName, String newDescription) throws SQLException {
-        PreparedStatement st = connection.prepareStatement("UPDATE products SET productDescricpion=? WHERE productName=?");
+        PreparedStatement st = connection.prepareStatement("UPDATE products SET productDescription=? WHERE productName=?");
         update(st, (statement -> {
             try {
                 statement.setString(1, newDescription);
