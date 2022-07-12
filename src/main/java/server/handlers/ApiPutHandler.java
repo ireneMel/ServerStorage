@@ -1,4 +1,4 @@
-package server;
+package server.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
@@ -12,8 +12,8 @@ import java.io.InputStream;
 import java.sql.SQLException;
 
 public class ApiPutHandler implements HttpHandler {
-    StorageDB db;
-    ObjectMapper mapper;
+    private final StorageDB db;
+    private ObjectMapper mapper;
 
     public ApiPutHandler(StorageDB db) {
         this.db = db;
