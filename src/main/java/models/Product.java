@@ -13,8 +13,8 @@ public class Product {
     private Double price;
     private Integer amount;
     private String groupName;
-    private String description;
-    private String manufacturer;
+    private String description = "";
+    private String manufacturer = "";
 
     public Product(String productName, double price, String groupName) {
         this.productName = productName;
