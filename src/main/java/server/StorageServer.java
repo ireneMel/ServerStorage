@@ -19,7 +19,6 @@ public class StorageServer {
 
     private void startServer(){
         server.createContext("/api",new ApiHandler(db));
-
         server.setExecutor(null);
         server.start();
     }
