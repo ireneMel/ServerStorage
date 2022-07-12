@@ -23,22 +23,23 @@ public class ApiGetHandler implements HttpHandler {
         mapper = new ObjectMapper();
     }
 
+    //doesn`t work product/all - output empty
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String uri = exchange.getRequestURI().toString();
         String uriNoApi = uri.substring(uri.indexOf("api") + 4);
 
         //can return : price || product || group
-        String identifier = uriNoApi.substring(0, uriNoApi.indexOf('/'));
+        String category = uriNoApi.substring(0, uriNoApi.indexOf('/'));
 
         try {
-            switch (identifier) {
+            switch (category) {
                 case "price":
-                    identifier = uriNoApi.substring(uriNoApi.indexOf("price") + 6, uriNoApi.lastIndexOf('/'));
-                    if ("product".equals(identifier)) {
+                    category = uriNoApi.substring(uriNoApi.indexOf("price") + 6, uriNoApi.lastIndexOf('/'));
+                    if ("product".equals(category)) {
                         String id = uriNoApi.substring(uriNoApi.lastIndexOf('/') + 1);
                         write200OK(exchange, db.getProductCost(id));
-                    } else if ("group".equals(identifier)) {
+                    } else if ("group".equals(category)) {
                         String id = uriNoApi.substring(uriNoApi.lastIndexOf('/') + 1);
                         write200OK(exchange, db.getGroupCost(id));
                     } else {
