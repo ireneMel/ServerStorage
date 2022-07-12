@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DbTest {
-    private static StorageDB storageDB = new StorageDB();
+    private static final StorageDB storageDB = new StorageDB();
     private List<Product> expectedProducts;
     private List<Group> expectedGroups;
     String[] groupNames = new String[]{"Meat", "Vegetables", "Fruits", "Grains", "Berry"};
@@ -59,6 +59,14 @@ public class DbTest {
     public void creation() throws SQLException {
         Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
         Assertions.assertIterableEquals(expectedGroups, storageDB.filterGroup(Criteria.builder().build()));
+
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.createProduct(new Product(
+                "Watermelon",
+                0,
+                0,
+                "this group does not exist",
+                "",
+                "")));
     }
 
     @Test
@@ -69,7 +77,7 @@ public class DbTest {
         storageDB.updateProductName("Watermelon", "Lime");
         storageDB.updateProductName("Melon", "Lemon");
         storageDB.updateProductName("Beef", "Pork");
-        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()), "Wrong name");
+        Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
     }
 
     @Test
@@ -81,6 +89,7 @@ public class DbTest {
         storageDB.updateProductAmount(expectedProducts.get(4).getProductName(), 5);
         storageDB.updateProductAmount(expectedProducts.get(2).getProductName(), 71);
         Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()), "Wrong amount");
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.updateProductAmount(expectedProducts.get(3).getProductName(), -12));
     }
 
     @Test
@@ -91,11 +100,8 @@ public class DbTest {
         storageDB.updateProductPrice(expectedProducts.get(3).getProductName(), 11.3);
         storageDB.updateProductPrice(expectedProducts.get(4).getProductName(), 45.1);
         storageDB.updateProductPrice(expectedProducts.get(2).getProductName(), 190.6);
-
-//        Assertions.assertThrows(new SQLException(), () -> {});
-
         Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
-
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.updateProductPrice(expectedProducts.get(3).getProductName(), -12));
     }
 
     @Test
@@ -160,16 +166,24 @@ public class DbTest {
     public void deleteProduct() throws SQLException {
         expectedProducts.remove(3);
         expectedProducts.remove(1);
-        storageDB.deleteProduct("Cucumber");
-        storageDB.deleteProduct("Cucumber");
         storageDB.deleteProduct("Melon");
+        storageDB.deleteProduct("Cucumber");
+
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteProduct("Cucumber"));
+
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteProduct("this product surely does not exist"));
+
         Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
     }
 
     @Test
     public void deleteGroup() throws SQLException {
+
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteProduct("this product surely does not exist"));
         storageDB.deleteGroup(groupNames[4]);
         storageDB.deleteGroup(groupNames[1]);
+
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteGroup("Grains"));
 
         expectedProducts.remove(0);
         expectedProducts.remove(0);
@@ -180,6 +194,7 @@ public class DbTest {
 
         Assertions.assertIterableEquals(expectedProducts, storageDB.filter(Criteria.builder().build()));
         Assertions.assertIterableEquals(expectedGroups, storageDB.filterGroup(Criteria.builder().build()));
+        Assertions.assertThrows(RuntimeException.class, () -> storageDB.deleteGroup("This gr does not exist"));
     }
 
     @Test
