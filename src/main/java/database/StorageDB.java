@@ -165,25 +165,23 @@ public class StorageDB {
         return st.executeQuery().getBoolean(1);
     }
 
-    public void createProduct(String productName, double price, int amount, String groupName, String productDescription, String productManufacturer) throws SQLException {
-        if (productName == null || productName.isBlank()) throw new RuntimeException("Product name must be not empty");
-        if (price < 0) throw new RuntimeException("Price must be above zero");
-        if (amount < 0) throw new RuntimeException("Amount must be above zero");
-        if (!isGroupExistent(groupName)) throw new RuntimeException("Group does not exist");
+    public void createProduct(Product product) throws SQLException {
+        isProductValid(product);
 
         PreparedStatement st = connection.prepareStatement("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?)");
-        st.setString(1, productName);
-        st.setDouble(2, price);
-        st.setInt(3, amount);
-        st.setString(4, groupName);
-        st.setString(5, productDescription);
-        st.setString(6, productManufacturer);
+        st.setString(1, product.getProductName());
+        st.setDouble(2, product.getPrice());
+        st.setInt(3, product.getAmount());
+        st.setString(4, product.getGroupName());
+        st.setString(5, product.getDescription());
+        st.setString(6, product.getManufacturer());
         st.executeUpdate();
         st.close();
+
     }
 
-    public void createProduct(Product product) throws SQLException {
-        createProduct(product.getProductName(), product.getPrice(), product.getAmount(), product.getGroupName(), product.getDescription(), product.getManufacturer());
+    public void createProduct(String productName, double price, int amount, String groupName, String productDescription, String productManufacturer) throws SQLException {
+        createProduct(new Product(productName,price,amount,groupName,productDescription,productManufacturer));
     }
 
     public void createProduct(String productName, double price, int amount, String groupName) throws SQLException {
@@ -377,20 +375,24 @@ public class StorageDB {
 
     }
 
+    private void isProductValid(Product product) throws SQLException {
+        if (!product.isNameValid()) throw new RuntimeException("Product name must be not empty");
+        if (!product.isPriceValid()) throw new RuntimeException("Price must be above zero");
+        if (!product.isAmountValid()) throw new RuntimeException("Amount must be above zero");
+        if (!product.isGroupValid() || !isGroupExistent(product.getGroupName()))
+            throw new RuntimeException("Group does not exist");
+    }
+
     public void updateProduct(String productName, Product newProduct) throws SQLException {
-        if (newProduct.getProductName() == null || newProduct.getProductName().isBlank())
-            throw new RuntimeException("Product name must be not empty");
-        if (newProduct.getPrice() < 0) throw new RuntimeException("Price must be above zero");
-        if (newProduct.getAmount() < 0) throw new RuntimeException("Amount must be above zero");
-        if (!isGroupExistent(newProduct.getGroupName())) throw new RuntimeException("Group does not exist");
+        isProductValid(newProduct);
 
         PreparedStatement st = connection.prepareStatement("UPDATE products " +
-                "SET productName=?, " +
-                "productPrice=?, " +
-                "productAmount=?, " +
-                "productGroup=?, " +
-                "productDescription=?, " +
-                "productManufacturer=? " +
+                "SET productName=COALESCE(?,productName), " +
+                "productPrice=COALESCE(?,productPrice), " +
+                "productAmount=COALESCE(?,productAmount), " +
+                "productGroup=COALESCE(?,productGroup), " +
+                "productDescription=COALESCE(?,productDescription), " +
+                "productManufacturer=COALESCE(?,productManufacturer) " +
                 "WHERE productName=?");
         update(st, (statement -> {
             try {

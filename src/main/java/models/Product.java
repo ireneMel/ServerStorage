@@ -10,8 +10,8 @@ import lombok.*;
 @EqualsAndHashCode
 public class Product {
     private String productName;
-    private double price;
-    private int amount;
+    private Double price;
+    private Integer amount;
     private String groupName;
     private String description;
     private String manufacturer;
@@ -20,6 +20,21 @@ public class Product {
         this.productName = productName;
         this.price = price;
         this.groupName = groupName;
+    }
+
+    public boolean isAmountValid(){
+        return amount != null && amount >= 0;
+    }
+
+    public boolean isPriceValid(){
+        return price != null && price >= 0;
+    }
+
+    public boolean isGroupValid(){
+        return groupName != null && !groupName.isBlank();
+    }
+    public boolean isNameValid(){
+        return productName != null && !productName.isBlank();
     }
 }
 

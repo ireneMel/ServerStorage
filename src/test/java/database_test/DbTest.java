@@ -27,11 +27,11 @@ public class DbTest {
             new Group("Berry", "")
     };
     Product[] allProducts = new Product[]{
-            new Product("Watermelon", 0, 0, groupNames[4], "", ""),
-            new Product("Melon", 0, 0, groupNames[4], "", ""),
-            new Product("Beef", 0, 0, groupNames[0], "", ""),
-            new Product("Cucumber", 0, 0, groupNames[1], "", ""),
-            new Product("Apple", 0, 0, groupNames[2], "", "")
+            new Product("Watermelon", 0.0, 0, groupNames[4], "", ""),
+            new Product("Melon", 0.0, 0, groupNames[4], "", ""),
+            new Product("Beef", 0.0, 0, groupNames[0], "", ""),
+            new Product("Cucumber", 0.0, 0, groupNames[1], "", ""),
+            new Product("Apple", 0.0, 0, groupNames[2], "", "")
     };
 
     @BeforeEach
@@ -62,7 +62,7 @@ public class DbTest {
 
         Assertions.assertThrows(RuntimeException.class, () -> storageDB.createProduct(new Product(
                 "Watermelon",
-                0,
+                0.0,
                 0,
                 "this group does not exist",
                 "",
@@ -249,7 +249,7 @@ public class DbTest {
         storageDB.createProduct("Milk", 25.6, 110, "Diary", "", "");
 
         expectedProducts.clear();
-        expectedProducts.add(new Product("Beef", 0, 0, groupNames[0], "", ""));
+        expectedProducts.add(new Product("Beef", 0.0, 0, groupNames[0], "", ""));
         expectedProducts.add(new Product("Beet", 12.5, 150, groupNames[1], "", ""));
         expectedProducts.add(new Product("Bean", 5.5, 300, groupNames[1], "", ""));
         expectedProducts.add(new Product("Blackberry", 172.0, 100, groupNames[4], "", ""));
