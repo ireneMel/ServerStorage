@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:sqlite:D:\IDEA\ServerStorage\OurDb</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="OurDb [2]" uuid="384e3cd5-21d3-40c3-b4de-36e084419499">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\Lenovo\IdeaProjects\ServerStorage\OurDb</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
