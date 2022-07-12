@@ -1,24 +1,35 @@
 package server;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import database.StorageDB;
+import server.handlers.ApiDeleteHandler;
+import server.handlers.ApiPostHandler;
+import server.handlers.ApiPutHandler;
 
 import java.io.IOException;
 
 public class ApiHandler implements HttpHandler {
-    private StorageDB db;
     private ApiPutHandler apiPutHandler;
+    private ApiPostHandler apiPostHandler;
+    private ApiDeleteHandler apiDeleteHandler;
+
     public ApiHandler(StorageDB db) {
-        this.db = db;
         apiPutHandler = new ApiPutHandler(db);
+        apiPostHandler = new ApiPostHandler(db);
+        apiDeleteHandler = new ApiDeleteHandler(db);
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if ("PUT".equals(exchange.getRequestMethod()))
+        if ("PUT".equals(exchange.getRequestMethod())) {
             apiPutHandler.handle(exchange);
+        } else if ("POST".equals(exchange.getRequestMethod())) {
+            apiPostHandler.handle(exchange);
+        } else if ("DELETE".equals(exchange.getRequestMethod())) {
+            apiDeleteHandler.handle(exchange);
+        } else if ("GET".equals(exchange.getRequestMethod())) {
+
+        }
     }
 }
