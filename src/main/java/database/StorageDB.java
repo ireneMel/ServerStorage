@@ -1,5 +1,6 @@
 package database;
 
+import models.Group;
 import models.Product;
 
 import java.sql.*;
@@ -68,15 +69,15 @@ public class StorageDB {
     }
 
     public void deleteGroup(String groupName) throws SQLException {
+        deleteProductsInGroup(groupName);
         PreparedStatement st = connection.prepareStatement("DELETE FROM groups WHERE groupName=?");
         st.setString(1, groupName);
         st.execute();
         st.close();
-        deleteProductsInGroup(groupName);
     }
 
     public Double getAllGroupCost(String groupName) throws SQLException {
-        PreparedStatement st = connection.prepareStatement("SELECT productPrice, productAmount FROM products WHERE groupName=?");
+        PreparedStatement st = connection.prepareStatement("SELECT productPrice, productAmount FROM products WHERE productGroup=?");
         st.setString(1, groupName);
         ResultSet res = st.executeQuery();
         double sum = 0;
@@ -174,8 +175,7 @@ public class StorageDB {
 
     private void deleteProductsInGroup(String groupName) throws SQLException {
         if (!isGroupExists(groupName)) throw new RuntimeException("Group does not exist");
-
-        PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE groupName=?");
+        PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE productGroup=?");
         st.setString(1, groupName);
         st.execute();
         st.close();
@@ -279,7 +279,6 @@ public class StorageDB {
                 throw new RuntimeException(ex);
             }
         }));
-
     }
 
     public void updateProductDescription(String productName, String newDescription) throws SQLException {
