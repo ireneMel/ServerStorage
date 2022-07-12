@@ -181,7 +181,7 @@ public class StorageDB {
     }
 
     public void createProduct(String productName, double price, int amount, String groupName, String productDescription, String productManufacturer) throws SQLException {
-        createProduct(new Product(productName,price,amount,groupName,productDescription,productManufacturer));
+        createProduct(new Product(productName, price, amount, groupName, productDescription, productManufacturer));
     }
 
     public void createProduct(String productName, double price, int amount, String groupName) throws SQLException {
@@ -384,7 +384,15 @@ public class StorageDB {
     }
 
     public void updateProduct(String productName, Product newProduct) throws SQLException {
-        isProductValid(newProduct);
+        if (newProduct.getProductName() != null && !newProduct.isNameValid())
+            throw new RuntimeException("Product name must be not empty");
+        if (newProduct.getPrice() != null && !newProduct.isPriceValid())
+            throw new RuntimeException("Price must be above zero");
+        if (newProduct.getAmount() != null && !newProduct.isAmountValid())
+            throw new RuntimeException("Amount must be above zero");
+        if (newProduct.getGroupName() != null && (!newProduct.isGroupValid() || !isGroupExistent(newProduct.getGroupName())))
+            throw new RuntimeException("Group does not exist");
+
 
         PreparedStatement st = connection.prepareStatement("UPDATE products " +
                 "SET productName=COALESCE(?,productName), " +
@@ -423,12 +431,13 @@ public class StorageDB {
                 " (productManufacturer LIKE ?) "
         );
 
+
         st.setString(1, criteria.getProductNameQuery() + "%");
         st.setDouble(2, criteria.getLowerBoundPrice());
         st.setDouble(3, criteria.getUpperBoundPrice());
         st.setInt(4, criteria.getLowerBoundAmount());
         st.setInt(5, criteria.getUpperBoundAmount());
-        st.setString(6, criteria.getGroupNameQuery() + "%");
+        st.setString(6, criteria.getGroupNameQuery());
         st.setString(7, criteria.getDescriptionQuery() + "%");
         st.setString(8, criteria.getManufacturerQuery() + "%");
 
