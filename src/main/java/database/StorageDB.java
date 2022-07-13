@@ -233,13 +233,14 @@ public class StorageDB {
         );
     }
 
-    public Group readGroup(String productName) throws SQLException {
+    public Group readGroup(String groupName) throws SQLException {
         PreparedStatement st = connection.prepareStatement("SELECT * FROM groups WHERE groupName=?");
-        st.setString(1, productName);
+        st.setString(1, groupName);
         ResultSet res = st.executeQuery();
         Group group = getGroup(res);
 
         st = connection.prepareStatement("SELECT * FROM products WHERE productGroup=?");
+        st.setString(1, groupName);
         res = st.executeQuery();
 
         List<Product> productsFromGroup = new ArrayList<>();

@@ -23,7 +23,6 @@ public class ApiGetHandler implements HttpHandler {
         mapper = new ObjectMapper();
     }
 
-    //doesn`t work product/all - output empty
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String uri = exchange.getRequestURI().toString();
@@ -58,7 +57,9 @@ public class ApiGetHandler implements HttpHandler {
                     if (params == null) { //product/id || product/all
                         String id = uriNoApi.substring(uriNoApi.lastIndexOf('/') + 1);
                         if ("all".equals(id)) {
-                            List<Product> allProductsInfo = db.filter(Criteria.builder().build());
+                            Criteria.CriteriaBuilder criteriaBuilder = Criteria.builder();
+                            criteriaBuilder.groupNameQuery("%", true);
+                            List<Product> allProductsInfo = db.filter(criteriaBuilder.build());
                             write200OK(exchange, allProductsInfo);
                         } else {
                             Product currentProduct = db.readProduct(id);
@@ -93,7 +94,7 @@ public class ApiGetHandler implements HttpHandler {
                     }
                     break;
                 case "group":
-                    String id = uriNoApi.substring(uriNoApi.lastIndexOf('/'));
+                    String id = uriNoApi.substring(uriNoApi.lastIndexOf('/')+1);
                     Group group = db.readGroup(id);
                     write200OK(exchange, group);
                     break;
