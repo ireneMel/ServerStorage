@@ -405,8 +405,8 @@ public class StorageDB {
         update(st, (statement -> {
             try {
                 statement.setString(1, newProduct.getProductName());
-                statement.setDouble(2, newProduct.getPrice());
-                statement.setInt(3, newProduct.getAmount());
+                statement.setObject(2, newProduct.getPrice());
+                statement.setObject(3, newProduct.getAmount());
                 statement.setString(4, newProduct.getGroupName());
                 statement.setString(5, newProduct.getDescription());
                 statement.setString(6, newProduct.getManufacturer());
