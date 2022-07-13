@@ -418,6 +418,35 @@ public class StorageDB {
 
     }
 
+    public void increaseProductAmount(String productName, int delta) throws SQLException {
+        PreparedStatement st = connection.prepareStatement("UPDATE products SET productAmount=productAmount+? WHERE productName=? ");
+        update(st, (statement -> {
+            try {
+                st.setInt(1, delta);
+                st.setString(2, productName);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }));
+    }
+
+    public void decreaseProductAmount(String productName, int delta) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(
+                "UPDATE products SET productAmount=productAmount-? WHERE productName=? "
+                        + "AND productAmount-?>0"
+        );
+        update(st, (statement -> {
+            try {
+                st.setInt(1, delta);
+                st.setString(2, productName);
+                st.setInt(3, delta);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }));
+    }
+
+
     public List<Product> filter(Criteria criteria) throws SQLException {
 
         LinkedList<Product> productList = new LinkedList<>();
