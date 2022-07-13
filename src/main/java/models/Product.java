@@ -22,18 +22,18 @@ public class Product {
         this.groupName = groupName;
     }
 
-    public boolean isAmountValid(){
+    public boolean checkAmountValid(){
         return amount != null && amount >= 0;
     }
 
-    public boolean isPriceValid(){
+    public boolean checkPriceValid(){
         return price != null && price >= 0;
     }
 
-    public boolean isGroupValid(){
+    public boolean checkGroupValid(){
         return groupName != null && !groupName.isBlank();
     }
-    public boolean isNameValid(){
+    public boolean checkNameValid(){
         return productName != null && !productName.isBlank();
     }
 }

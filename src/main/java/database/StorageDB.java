@@ -377,21 +377,21 @@ public class StorageDB {
     }
 
     private void isProductValid(Product product) throws SQLException {
-        if (!product.isNameValid()) throw new RuntimeException("Product name must be not empty");
-        if (!product.isPriceValid()) throw new RuntimeException("Price must be above zero");
-        if (!product.isAmountValid()) throw new RuntimeException("Amount must be above zero");
-        if (!product.isGroupValid() || !isGroupExistent(product.getGroupName()))
+        if (!product.checkNameValid()) throw new RuntimeException("Product name must be not empty");
+        if (!product.checkPriceValid()) throw new RuntimeException("Price must be above zero");
+        if (!product.checkAmountValid()) throw new RuntimeException("Amount must be above zero");
+        if (!product.checkGroupValid() || !isGroupExistent(product.getGroupName()))
             throw new RuntimeException("Group does not exist");
     }
 
     public void updateProduct(String productName, Product newProduct) throws SQLException {
-        if (newProduct.getProductName() != null && !newProduct.isNameValid())
+        if (newProduct.getProductName() != null && !newProduct.checkNameValid())
             throw new RuntimeException("Product name must be not empty");
-        if (newProduct.getPrice() != null && !newProduct.isPriceValid())
+        if (newProduct.getPrice() != null && !newProduct.checkPriceValid())
             throw new RuntimeException("Price must be above zero");
-        if (newProduct.getAmount() != null && !newProduct.isAmountValid())
+        if (newProduct.getAmount() != null && !newProduct.checkAmountValid())
             throw new RuntimeException("Amount must be above zero");
-        if (newProduct.getGroupName() != null && (!newProduct.isGroupValid() || !isGroupExistent(newProduct.getGroupName())))
+        if (newProduct.getGroupName() != null && (!newProduct.checkGroupValid() || !isGroupExistent(newProduct.getGroupName())))
             throw new RuntimeException("Group does not exist");
 
 

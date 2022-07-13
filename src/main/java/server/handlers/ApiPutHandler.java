@@ -1,5 +1,7 @@
 package server.handlers;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -18,6 +20,7 @@ public class ApiPutHandler implements HttpHandler {
     public ApiPutHandler(StorageDB db) {
         this.db = db;
         mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     @Override
