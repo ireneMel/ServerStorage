@@ -263,7 +263,6 @@ public class DbTest {
         Assertions.assertNotEquals(0, storageDB.getGroupCost(expectedProducts.get(1).getGroupName()));
     }
 
-
     @Test
     public void listByCriteriaProductName() throws SQLException {
         storageDB.createGroup("Diary");

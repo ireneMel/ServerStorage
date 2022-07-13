@@ -8,11 +8,21 @@ import database.StorageDB;
 import lombok.SneakyThrows;
 
 import javax.net.ssl.*;
-import java.io.FileInputStream;
-import java.io.IOException;
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
 import java.net.InetSocketAddress;
+import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StorageServer {
     private HttpServer server;
@@ -38,10 +48,14 @@ public class StorageServer {
     private void configure() {        // initialise the keystore
 
         // initialise the keystore
-        char[] Password = "password".toCharArray();
+        char[] Password = "123123".toCharArray();
+
         KeyStore Key_Store = KeyStore.getInstance("JKS");
-        FileInputStream Input_Stream = new FileInputStream("testkey.jks");
+        FileInputStream Input_Stream = new FileInputStream("cacerts.jks");
         Key_Store.load(Input_Stream, Password);
+
+//        final PrivateKey key = createPrivateKey(new File("key.pem"));
+//        Key_Store.setKeyEntry("key.pem", key, Password, cert);
 
         // set up the key manager factory
         KeyManagerFactory Key_Manager = KeyManagerFactory.getInstance("SunX509");
