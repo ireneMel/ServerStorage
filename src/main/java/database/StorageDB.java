@@ -484,25 +484,25 @@ public class StorageDB {
     }
 
     public List<Group> filterGroup(Criteria criteria) throws SQLException {
-        LinkedList<Group> productList = new LinkedList<>();
+        LinkedList<Group> groupList = new LinkedList<>();
 
         PreparedStatement st = connection.prepareStatement("SELECT * FROM groups WHERE" +
                 " (groupName LIKE ?) AND" +
                 " (groupDescription LIKE ?) "
         );
 
-        st.setString(1, criteria.getGroupNameQuery() + "%");
+        st.setString(1, criteria.getGroupNameQuery());
         st.setString(2, criteria.getDescriptionQuery() + "%");
 
         ResultSet res = st.executeQuery();
 
         while (res.next()) {
-            productList.add(getGroup(res));
+            groupList.add(getGroup(res));
         }
 
         st.execute();
         res.close();
         st.close();
-        return productList;
+        return groupList;
     }
 }
