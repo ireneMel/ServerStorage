@@ -97,9 +97,15 @@ public class ApiGetHandler implements HttpHandler {
                     }
                     break;
                 case "group":
-                    String id = uriNoApi.substring(uriNoApi.lastIndexOf('/')+1);
-                    Group group = db.readGroup(id);
-                    write200OK(exchange, group);
+                    String id = uriNoApi.substring(uriNoApi.lastIndexOf('/') + 1);
+                    if ("all".equals(id)) {
+                        List<Group> allGroupsInfo = db.filterGroup(Criteria.builder().
+                                groupNameQuery("%", true).build());
+                        write200OK(exchange, allGroupsInfo);
+                    } else {
+                        Group group = db.readGroup(id);
+                        write200OK(exchange, group);
+                    }
                     break;
                 default:
                     String ret = "Incorrect operation";
