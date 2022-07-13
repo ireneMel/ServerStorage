@@ -11,7 +11,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class Group {
     private String groupName;
-    private String description;
+    private String description = "";
     private List<Product> groupProducts;
 
     public Group(String groupName, String description) {
