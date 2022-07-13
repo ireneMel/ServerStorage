@@ -25,15 +25,13 @@ public class Criteria {
     public static class CriteriaBuilder {
         private String groupNameQuery = "";
 
-        public void groupNameQuery(String groupNameQuery, boolean isExact) {
+        public CriteriaBuilder groupNameQuery(String groupNameQuery, boolean isExact) {
             if (isExact)
                 this.groupNameQuery = groupNameQuery;
             else
                 this.groupNameQuery = groupNameQuery + '%';
+            return this;
         }
 
-        public String getGroupNameQuery() {
-            return groupNameQuery;
-        }
     }
 }
