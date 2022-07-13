@@ -22,7 +22,7 @@ public class ApiPostHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String uri = exchange.getRequestURI().toString();
-        //product or group
+        //product or group or increase or decrease
         String category = uri.substring(uri.indexOf("api") + 4, uri.lastIndexOf('/'));
         //name of product or group
         String nameToUpdate = uri.substring(uri.lastIndexOf('/') + 1);
@@ -44,6 +44,26 @@ public class ApiPostHandler implements HttpHandler {
                 db.updateGroupName(nameToUpdate, group.getGroupName());
                 if (group.getDescription() != null)
                     db.updateGroupDescription(nameToUpdate, group.getDescription());
+                exchange.sendResponseHeaders(200, 0);
+            } catch (Exception e) {
+                exchange.sendResponseHeaders(409, e.getMessage().length());
+                exchange.getResponseBody().write(e.getMessage().getBytes());
+            }
+        } else if ("increase".equals(category)) {
+            inputStream = exchange.getRequestBody();
+            try {
+                int delta = mapper.readValue(inputStream.readAllBytes(), Integer.class);
+                db.increaseProductAmount(nameToUpdate, delta);
+                exchange.sendResponseHeaders(200, 0);
+            } catch (Exception e) {
+                exchange.sendResponseHeaders(409, e.getMessage().length());
+                exchange.getResponseBody().write(e.getMessage().getBytes());
+            }
+        } else if ("decrease".equals(category)) {
+            inputStream = exchange.getRequestBody();
+            try {
+                int delta = mapper.readValue(inputStream.readAllBytes(), Integer.class);
+                db.decreaseProductAmount(nameToUpdate, delta);
                 exchange.sendResponseHeaders(200, 0);
             } catch (Exception e) {
                 exchange.sendResponseHeaders(409, e.getMessage().length());
