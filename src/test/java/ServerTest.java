@@ -17,6 +17,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -45,8 +46,15 @@ public class ServerTest {
 
     @SneakyThrows
     @Test
-    public void putRequestAddGroup() {
+    public void putAddGroup() {
         //add group
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri + "group/test-group"))
+                .DELETE()
+                .build();
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).join();
 
 //        //check that before the test group doesn`t exist
 //        Assertions.assertEquals(new LinkedList<>(), server.getDb().filterGroup(Criteria.builder()
@@ -76,8 +84,8 @@ public class ServerTest {
 
     @Test
     public void postIncrease() throws SQLException, IOException, InterruptedException {
-        addProduct(testGroupProducts[0]).thenApply(HttpResponse::body).join();
         addGroup(group).thenApply(HttpResponse::body).join();
+        addProduct(testGroupProducts[0]).thenApply(HttpResponse::body).join();
 
         int amountBefore = server.getDb().readProduct(testGroupProducts[0].getProductName()).getAmount();
 
@@ -137,21 +145,21 @@ public class ServerTest {
 
     @AfterAll
     public static void deleteTestGroup() throws SQLException {
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(URI.create(uri + "group/test-group"))
-//                .DELETE()
-//                .build();
-//        HttpClient httpClient = HttpClient.newBuilder().build();
-//        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).join();
-//
-//        //assert that group is not in the database
-//        Assertions.assertEquals(new LinkedList<>(), server.getDb().filterGroup(Criteria.builder()
-//                .groupNameQuery("test-group", true)
-//                .build()));
-//        //assert that all product from the group were deleted
-//        Assertions.assertEquals(new LinkedList<>(), server.getDb().filter(Criteria.builder()
-//                .groupNameQuery("test-group", true)
-//                .build()));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri + "group/test-group"))
+                .DELETE()
+                .build();
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).join();
+
+        //assert that group is not in the database
+        Assertions.assertEquals(new LinkedList<>(), server.getDb().filterGroup(Criteria.builder()
+                .groupNameQuery("test-group", true)
+                .build()));
+        //assert that all product from the group were deleted
+        Assertions.assertEquals(new LinkedList<>(), server.getDb().filter(Criteria.builder()
+                .groupNameQuery("test-group", true)
+                .build()));
     }
 
     private CompletableFuture<HttpResponse<String>> addGroup(Group group) throws IOException {
