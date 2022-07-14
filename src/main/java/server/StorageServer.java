@@ -14,8 +14,7 @@ public class StorageServer {
 
     private StorageDB db;
     public StorageServer(int port) throws IOException {
-        db = new StorageDB();
-        db.initialization("OurDb");
+        db = new StorageDB("OurDb");
         server = HttpServer.create(new InetSocketAddress(port), 0);
     }
 
