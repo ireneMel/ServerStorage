@@ -11,14 +11,15 @@ import java.util.concurrent.Executors;
 
 public class StorageServer {
     private HttpServer server;
+
     private StorageDB db;
-    StorageServer(int port) throws IOException {
+    public StorageServer(int port) throws IOException {
         db = new StorageDB();
         db.initialization("OurDb");
         server = HttpServer.create(new InetSocketAddress(port), 0);
     }
 
-    private void startServer(){
+    public void startServer(){
         server.createContext("/api",new ApiHandler(db));
         server.setExecutor(Executors.newFixedThreadPool(5));
         server.start();
@@ -26,5 +27,10 @@ public class StorageServer {
 
     public static void main(String[] args) throws IOException {
         new StorageServer(8765).startServer();
+    }
+
+    //generated for tests
+    public StorageDB getDb() {
+        return db;
     }
 }
