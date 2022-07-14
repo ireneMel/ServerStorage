@@ -7,6 +7,7 @@ import models.Group;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 public class StorageServer {
     private HttpServer server;
@@ -19,7 +20,7 @@ public class StorageServer {
 
     private void startServer(){
         server.createContext("/api",new ApiHandler(db));
-        server.setExecutor(null);
+        server.setExecutor(Executors.newFixedThreadPool(5));
         server.start();
     }
 
