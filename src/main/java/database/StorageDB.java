@@ -202,8 +202,7 @@ public class StorageDB {
         if (!isGroupExistent(groupName)) throw new RuntimeException("Group does not exist");
         PreparedStatement st = connection.prepareStatement("DELETE FROM products WHERE productGroup=?");
         st.setString(1, groupName);
-        int res = st.executeUpdate();
-        if (res < 1) throw new RuntimeException("This group does not exist");
+        st.executeUpdate();
         st.close();
     }
 
