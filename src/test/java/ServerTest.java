@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sqlite.SQLiteException;
 import server.StorageServer;
 
 import java.io.IOException;
@@ -31,9 +30,9 @@ public class ServerTest {
     private ExecutorService executorService = Executors.newFixedThreadPool(5);
     Group group = new Group("test-group", "");
 
-    private Product[] testGroupProducts = new Product[]{
+    private final Product[] testGroupProducts = new Product[]{
             new Product("pr1", 10.0, 10, "test-group", "", ""),
-            new Product("pr2", 20.0, 120, "test-group", "", ""),
+            new Product("pr2", 20.0, 320, "test-group", "", ""),
             new Product("pr3", 30.0, 30, "test-group", "", ""),
             new Product("pr4", 40.0, 40, "test-group", "", "")
     };
@@ -76,45 +75,63 @@ public class ServerTest {
     }
 
     @Test
-    public void postIncrease() throws SQLException, IOException {
+    public void postIncrease() throws SQLException, IOException, InterruptedException {
 //        addProduct(testGroupProducts[0]).thenApply(HttpResponse::body).join();
 //        addGroup(group).thenApply(HttpResponse::body).join();
-//        executorService.execute(() -> {
-//            try {
-//                increaseProduct(testGroupProducts[0].getProductName(), 10).thenApply(HttpResponse::body).join();
-//                increaseProduct(testGroupProducts[0].getProductName(), 20).thenApply(HttpResponse::body).join();
-//                increaseProduct(testGroupProducts[0].getProductName(), 50).thenApply(HttpResponse::body).join();
-//                increaseProduct(testGroupProducts[0].getProductName(), 90).thenApply(HttpResponse::body).join();
-//            } catch (JsonProcessingException e) {
-//                throw new RuntimeException(e);
+//
+//        int amountBefore = server.getDb().readProduct(testGroupProducts[0].getProductName()).getAmount();
+//
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    increaseProduct(testGroupProducts[0].getProductName(), 10).thenApply(HttpResponse::body);
+//                    increaseProduct(testGroupProducts[0].getProductName(), 20).thenApply(HttpResponse::body);
+//                    increaseProduct(testGroupProducts[0].getProductName(), 50).thenApply(HttpResponse::body);
+//                    increaseProduct(testGroupProducts[0].getProductName(), 90).thenApply(HttpResponse::body);
+//                } catch (JsonProcessingException e) {
+//                    throw new RuntimeException(e);
+//                }
 //            }
 //        });
 //
-//        Product updated = server.getDb().filter(Criteria.builder()
-//                .productNameQuery("pr").build()).get(0);
+//        Product updated = server.getDb().readProduct(testGroupProducts[0].getProductName());
 //
-//        Assertions.assertEquals(180, updated.getAmount());
+//        Assertions.assertEquals(amountBefore + 180, updated.getAmount());
     }
 
     @Test
     public void postDecrease() throws IOException, SQLException {
         addProduct(testGroupProducts[1]).thenApply(HttpResponse::body).join();
         addGroup(group).thenApply(HttpResponse::body).join();
-
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            decreaseProduct(testGroupProducts[1].getProductName(), 10).thenApply(HttpResponse::body).join();
-            decreaseProduct(testGroupProducts[1].getProductName(), 20).thenApply(HttpResponse::body).join();
-            decreaseProduct(testGroupProducts[1].getProductName(), 50).thenApply(HttpResponse::body).join();
-            decreaseProduct(testGroupProducts[1].getProductName(), 90).thenApply(HttpResponse::body).join();
+        int beforeDecrease = server.getDb().readProduct(testGroupProducts[1].getProductName()).getAmount();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    decreaseProduct(testGroupProducts[1].getProductName(), 30).thenApply(HttpResponse::body);
+                    decreaseProduct(testGroupProducts[1].getProductName(), 10).thenApply(HttpResponse::body);
+                    decreaseProduct(testGroupProducts[1].getProductName(), 20).thenApply(HttpResponse::body);
+                    decreaseProduct(testGroupProducts[1].getProductName(), 50).thenApply(HttpResponse::body);
+                    decreaseProduct(testGroupProducts[1].getProductName(), 90).thenApply(HttpResponse::body);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
+        Product updated = server.getDb().readProduct(testGroupProducts[1].getProductName());
+
+        Assertions.assertTrue(updated.checkAmountValid());
+        Assertions.assertEquals(((beforeDecrease - 190 < 0) ? 0 : beforeDecrease), (int) updated.getAmount());
     }
 
     public void postGroup() {
 
     }
 
-    public void postProduct() {
-
+    @Test
+    public void postProduct() throws JsonProcessingException {
+        updateProduct(testGroupProducts[2].getProductName(), new Product("newnewpr", 10, "group-test"));
     }
 
     @AfterAll

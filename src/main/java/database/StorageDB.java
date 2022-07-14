@@ -17,13 +17,13 @@ Delete
 List by criteria
  */
 public class StorageDB {
-    private Connection connection;
+    private final Connection connection;
 
     public void closeConnection() throws SQLException {
         connection.close();
     }
 
-    public void initialization(String name) {
+    public StorageDB(String name) {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + name);
