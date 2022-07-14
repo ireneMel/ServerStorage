@@ -13,8 +13,7 @@ public class StorageServer {
     private HttpServer server;
     private StorageDB db;
     StorageServer(int port) throws IOException {
-        db = new StorageDB();
-        db.initialization("OurDb");
+        db = new StorageDB("OurDb");
         server = HttpServer.create(new InetSocketAddress(port), 0);
     }
 

@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DbTest {
-    private static final StorageDB storageDB = new StorageDB();
+    private static final StorageDB storageDB = new StorageDB("OurStorage");
     private List<Product> expectedProducts;
     private List<Group> expectedGroups;
     String[] groupNames = new String[]{"Meat", "Vegetables", "Fruits", "Grains", "Berry"};
@@ -36,7 +36,6 @@ public class DbTest {
 
     @BeforeEach
     public void init() throws SQLException {
-        storageDB.initialization("OurStorage");
         storageDB.deleteAllGroups();
 
         expectedProducts = new LinkedList<>(List.of(allProducts));
