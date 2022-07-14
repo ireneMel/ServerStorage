@@ -88,6 +88,7 @@ public class ApiGetHandler implements HttpHandler {
                         if (minAmount != null) criteriaBuilder.lowerBoundAmount(Integer.parseInt(minAmount));
                         if (maxAmount != null) criteriaBuilder.upperBoundAmount(Integer.parseInt(maxAmount));
                         if (group != null) criteriaBuilder.groupNameQuery(group, false);
+                        else criteriaBuilder.groupNameQuery("%",true);
                         if (description != null) criteriaBuilder.descriptionQuery(description);
                         if (manufacturer != null) criteriaBuilder.manufacturerQuery(manufacturer);
 
