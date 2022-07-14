@@ -119,7 +119,7 @@ public class StorageDB {
     }
 
     public void updateGroupName(String groupName, String newName) throws SQLException {
-        if (newName == null || newName.isBlank()) throw new RuntimeException("Group name must be not empty");
+        if (newName.isBlank()) throw new RuntimeException("Group name must be not empty");
         PreparedStatement st = connection.prepareStatement("UPDATE groups SET groupName=? WHERE groupName=?");
         update(st, (statement -> {
             try {
