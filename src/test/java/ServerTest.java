@@ -76,28 +76,29 @@ public class ServerTest {
 
     @Test
     public void postIncrease() throws SQLException, IOException, InterruptedException {
-//        addProduct(testGroupProducts[0]).thenApply(HttpResponse::body).join();
-//        addGroup(group).thenApply(HttpResponse::body).join();
-//
-//        int amountBefore = server.getDb().readProduct(testGroupProducts[0].getProductName()).getAmount();
-//
-//        executorService.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    increaseProduct(testGroupProducts[0].getProductName(), 10).thenApply(HttpResponse::body);
-//                    increaseProduct(testGroupProducts[0].getProductName(), 20).thenApply(HttpResponse::body);
-//                    increaseProduct(testGroupProducts[0].getProductName(), 50).thenApply(HttpResponse::body);
-//                    increaseProduct(testGroupProducts[0].getProductName(), 90).thenApply(HttpResponse::body);
-//                } catch (JsonProcessingException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        });
-//
-//        Product updated = server.getDb().readProduct(testGroupProducts[0].getProductName());
-//
-//        Assertions.assertEquals(amountBefore + 180, updated.getAmount());
+        addProduct(testGroupProducts[0]).thenApply(HttpResponse::body).join();
+        addGroup(group).thenApply(HttpResponse::body).join();
+
+        int amountBefore = server.getDb().readProduct(testGroupProducts[0].getProductName()).getAmount();
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    increaseProduct(testGroupProducts[0].getProductName(), 10).thenApply(HttpResponse::body);
+                    increaseProduct(testGroupProducts[0].getProductName(), 20).thenApply(HttpResponse::body);
+                    increaseProduct(testGroupProducts[0].getProductName(), 50).thenApply(HttpResponse::body);
+                    increaseProduct(testGroupProducts[0].getProductName(), 90).thenApply(HttpResponse::body);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        Thread.sleep(1000);
+        Product updated = server.getDb().readProduct(testGroupProducts[0].getProductName());
+
+        Assertions.assertEquals(amountBefore + 170, updated.getAmount());
     }
 
     @Test
