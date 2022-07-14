@@ -48,10 +48,10 @@ public class StorageServer {
     private void configure() {        // initialise the keystore
 
         // initialise the keystore
-        char[] Password = "123123".toCharArray();
+        char[] Password = "password".toCharArray();
 
         KeyStore Key_Store = KeyStore.getInstance("JKS");
-        FileInputStream Input_Stream = new FileInputStream("cacerts.jks");
+        FileInputStream Input_Stream = new FileInputStream("newcert1.jks");
         Key_Store.load(Input_Stream, Password);
 
 //        final PrivateKey key = createPrivateKey(new File("key.pem"));
