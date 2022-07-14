@@ -420,14 +420,16 @@ public class StorageDB {
 
     public void increaseProductAmount(String productName, int delta) throws SQLException {
         PreparedStatement st = connection.prepareStatement("UPDATE products SET productAmount=productAmount+? WHERE productName=? ");
-        update(st, (statement -> {
-            try {
-                st.setInt(1, delta);
-                st.setString(2, productName);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }));
+        synchronized (connection) {
+            update(st, (statement -> {
+                try {
+                    st.setInt(1, delta);
+                    st.setString(2, productName);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }));
+        }
     }
 
     public void decreaseProductAmount(String productName, int delta) throws SQLException {
@@ -436,22 +438,23 @@ public class StorageDB {
                         + "AND productAmount-?>=0"
         );
 
-
         final boolean oldAutoCommit = st.getConnection().getAutoCommit();
         st.getConnection().setAutoCommit(false);
         int res = 0;
-        try {
-            st.setInt(1, delta);
-            st.setString(2, productName);
-            st.setInt(3, delta);
-            res = st.executeUpdate();
-            st.close();
-        } catch (Exception e) {
-            st.getConnection().rollback();
-        } finally {
-            st.getConnection().commit();
-            st.getConnection().setAutoCommit(oldAutoCommit);
-            if (res == 0) throw new RuntimeException("Not enough products");
+        synchronized (connection) {
+            try {
+                st.setInt(1, delta);
+                st.setString(2, productName);
+                st.setInt(3, delta);
+                res = st.executeUpdate();
+                st.close();
+            } catch (Exception e) {
+                st.getConnection().rollback();
+            } finally {
+                st.getConnection().commit();
+                st.getConnection().setAutoCommit(oldAutoCommit);
+                if (res == 0) throw new RuntimeException("Not enough products");
+            }
         }
     }
 
